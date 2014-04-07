@@ -13,7 +13,7 @@
 
 @interface OCVSeq : NSObject
 @property (nonatomic, assign) CvSeq *seq;
-@property (nonatomic, strong) OCVMemStorage *memStorage;
+@property (nonatomic, strong) OCVMemStorage *storage;
 @property (nonatomic, assign) int headerSize;
 - (id)init;
 - (id)initWithMemStorage:(OCVMemStorage *)memStorage;

@@ -30,14 +30,14 @@
 	if ((self = [super init]) == nil)
 		return nil;
 	_seq = seq;
-	_memStorage = memStorage;
+	_storage = memStorage;
 	_headerSize = headerSize;
 	return self;
 }
 
 - (id)approxPoly:(double)eps recursive:(BOOL)recursive {
-	CvSeq *seq = cvApproxPoly(_seq, _headerSize, _memStorage.memStorage, CV_POLY_APPROX_DP, eps, recursive ? 1 : 0);
-	return [[self.class alloc] initWithCvSeq:seq headerSize:_headerSize memStorage:_memStorage];
+	CvSeq *seq = cvApproxPoly(_seq, _headerSize, _storage.memStorage, CV_POLY_APPROX_DP, eps, recursive ? 1 : 0);
+	return [[self.class alloc] initWithCvSeq:seq headerSize:_headerSize memStorage:_storage];
 }
 
 - (void)startTreeNodeIterator {
@@ -48,7 +48,7 @@
 	CvSeq *next = cvNextTreeNode(&treeNodeIterator);
 	if (next == NULL)
 		return nil;
-	return [[self.class alloc] initWithCvSeq:next headerSize:_headerSize memStorage:_memStorage];
+	return [[self.class alloc] initWithCvSeq:next headerSize:_headerSize memStorage:_storage];
 }
 
 - (int)total {

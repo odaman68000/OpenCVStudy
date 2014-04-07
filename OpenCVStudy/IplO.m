@@ -74,6 +74,7 @@
 }
 
 - (OCVSeq *)findContrours:(int)mode type:(int)method  {
+	NSAssert(_channels == 1, @"%@: image channel should be 1.", NSStringFromClass(self.class));
 	OCVMemStorage *st = [[OCVMemStorage alloc] init];
 	CvContour *cvContour = NULL;
 	if (mode < 0)
@@ -84,6 +85,9 @@
 	return [[OCVSeq alloc] initWithCvSeq:(CvSeq *)cvContour headerSize:sizeof(*cvContour) memStorage:st];
 }
 
+- (void)drawContours:(OCVSeq *)contours lineWidth:(int)lineWidth extColor:(CvScalar)extColor holeColor:(CvScalar)holeColor depth:(int)depth {
+	cvDrawContours(_iplImage, contours.seq, extColor, holeColor, depth, lineWidth, 4, cvPoint(0, 0));
+}
 
 - (id)blackAndWhite:(double)threshold {
 	IplO *grayscale = [self grayscale];

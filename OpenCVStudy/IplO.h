@@ -25,7 +25,10 @@
 - (id)initWithParameterIplImage:(IplO *)iplO;
 - (id)initWithSizeParameterIplImage:(IplO *)iplO depth:(int)depth channels:(int)channels;
 - (id)initWithPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+- (id)blackAndWhite:(double)threshold;
+- (id)grayscale;
 - (OCVSeq *)findContrours:(int)mode type:(int)method;
+- (void)drawContours:(OCVSeq *)contours lineWidth:(int)lineWidth extColor:(CvScalar)extColor holeColor:(CvScalar)holeColor depth:(int)depth;
 - (CvSize)cvSize;
 - (CGImageRef)CGImage;
 - (NSImage *)NSImage;
