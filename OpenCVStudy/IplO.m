@@ -34,24 +34,24 @@
 	return [self initWithIplImageWithoutCopy:newIplImage];
 }
 
-- (id)initWithSize:(CvSize)size depth:(int)depth channels:(int)channels {
-	IplImage *iplImage = cvCreateImage(size, depth, channels);
+- (id)initWithWidth:(int)width height:(int)height depth:(int)depth channels:(int)channels {
+	IplImage *iplImage = cvCreateImage(cvSize(width, height), depth, channels);
 	return [self initWithIplImageWithoutCopy:iplImage];
 }
 
 - (id)initWithParameterIplImage:(IplO *)iplO {
-	IplImage *iplImage = cvCreateImage(iplO.cvSize, iplO.depth, iplO.channels);
+	IplImage *iplImage = cvCreateImage(cvGetSize(iplO.iplImage), iplO.depth, iplO.channels);
 	return [self initWithIplImageWithoutCopy:iplImage];
 }
 
 - (id)initWithSizeParameterIplImage:(IplO *)iplO depth:(int)depth channels:(int)channels {
-	IplImage *iplImage = cvCreateImage(iplO.cvSize, depth, channels);
+	IplImage *iplImage = cvCreateImage(cvGetSize(iplO.iplImage), depth, channels);
 	return [self initWithIplImageWithoutCopy:iplImage];
 }
 
-- (id)initWithBytes:(const void *)bytes size:(CvSize)size bytesPerRow:(int)bytesPerRow depth:(int)depth channels:(int)channels {
+- (id)initWithBytes:(const void *)bytes width:(int)width height:(int)height bytesPerRow:(int)bytesPerRow depth:(int)depth channels:(int)channels {
 	IplImage iplHeader;
-	cvInitImageHeader(&iplHeader, size, depth, channels, 0, 4);
+	cvInitImageHeader(&iplHeader, cvSize(width, height), depth, channels, 0, 4);
 	cvSetData(&iplHeader, (void *)bytes, bytesPerRow);
 	IplImage *iplImage = cvCloneImage(&iplHeader);
 	return [self initWithIplImageWithoutCopy:iplImage];
@@ -62,15 +62,11 @@
 	int w = (int)CVPixelBufferGetWidth(pixelBuffer);
 	int h = (int)CVPixelBufferGetHeight(pixelBuffer);
 	int b = (int)CVPixelBufferGetBytesPerRow(pixelBuffer);
-	return [self initWithBytes:imagedata size:cvSize(w, h) bytesPerRow:b depth:IPL_DEPTH_8U channels:4];
+	return [self initWithBytes:imagedata width:w height:h bytesPerRow:b depth:IPL_DEPTH_8U channels:4];
 }
 
 - (id)copyWithZone:(NSZone *)zone {
 	return [[self.class allocWithZone:zone] initWithIplImage:_iplImage];
-}
-
-- (CvSize)cvSize {
-	return cvSize(_width, _height);
 }
 
 - (OCVSeq *)findContrours:(int)mode type:(int)method  {
@@ -124,7 +120,7 @@
 	} else if (_channels == 3) {
 		colorspace = [NSColorSpace genericRGBColorSpace].CGColorSpace;
 		bitmapInfo = kCGBitmapByteOrder32Little|kCGImageAlphaPremultipliedFirst;
-		iplImage = cvCreateImage(self.cvSize, IPL_DEPTH_8U, 4);
+		iplImage = cvCreateImage(cvGetSize(self.iplImage), IPL_DEPTH_8U, 4);
 		cvCvtColor(_iplImage, iplImage, CV_BGR2BGRA);
 	} else {
 		colorspace = [NSColorSpace genericRGBColorSpace].CGColorSpace;

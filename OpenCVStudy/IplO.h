@@ -20,8 +20,8 @@
 @property (nonatomic, assign, readonly) int depth;
 @property (nonatomic, assign, readonly) int channels;
 - (id)initWithIplImage:(IplImage *)iplImage;
-- (id)initWithSize:(CvSize)size depth:(int)depth channels:(int)channels;
-- (id)initWithBytes:(const void *)bytes size:(CvSize)size bytesPerRow:(int)bytesPerRow depth:(int)depth channels:(int)channels;
+- (id)initWithWidth:(int)width height:(int)height depth:(int)depth channels:(int)channels;
+- (id)initWithBytes:(const void *)bytes width:(int)width height:(int)height bytesPerRow:(int)bytesPerRow depth:(int)depth channels:(int)channels;
 - (id)initWithParameterIplImage:(IplO *)iplO;
 - (id)initWithSizeParameterIplImage:(IplO *)iplO depth:(int)depth channels:(int)channels;
 - (id)initWithPixelBuffer:(CVPixelBufferRef)pixelBuffer;
@@ -29,7 +29,6 @@
 - (id)grayscale;
 - (OCVSeq *)findContrours:(int)mode type:(int)method;
 - (void)drawContours:(OCVSeq *)contours lineWidth:(int)lineWidth extColor:(CvScalar)extColor holeColor:(CvScalar)holeColor depth:(int)depth;
-- (CvSize)cvSize;
 - (CGImageRef)CGImage;
 - (NSImage *)NSImage;
 @end
