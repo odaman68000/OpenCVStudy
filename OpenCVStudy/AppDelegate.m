@@ -10,23 +10,15 @@
 #import <AVFoundation/AVFoundation.h>
 #import <opencv2/core/core_c.h>
 #import <opencv2/imgproc/imgproc_c.h>
-
-static __inline__ NSImage *NSImageFromIplImage(IplImage *iplImage) {
-	CGColorSpaceRef colorspace = [NSColorSpace genericRGBColorSpace].CGColorSpace;
-	CGContextRef context = CGBitmapContextCreate(iplImage->imageData, iplImage->width, iplImage->height, 8, iplImage->widthStep, colorspace, kCGBitmapByteOrder32Little|kCGImageAlphaPremultipliedFirst);
-	CGImageRef cgImage = CGBitmapContextCreateImage(context);
-	NSImage *nsImage = [[NSImage alloc] initWithCGImage:cgImage size:NSZeroSize];
-	CGImageRelease(cgImage);
-	CGContextRelease(context);
-	return nsImage;
-}
+#import "IplO.h"
+#import "OCVSeq.h"
 
 @interface AppDelegate () <AVCaptureVideoDataOutputSampleBufferDelegate>
 @property (nonatomic, weak) IBOutlet NSImageView *imageView;
 @property (nonatomic, strong) AVCaptureSession *captureSession;
 @property (nonatomic, strong) dispatch_semaphore_t imgProcSemaphore;
 @property (nonatomic, strong) dispatch_semaphore_t imgCreaSemaphore;
-@property (nonatomic, assign) IplImage *curImage;
+@property (nonatomic, strong) IplO *curImage;
 @end
 
 @implementation AppDelegate
@@ -48,7 +40,20 @@ static __inline__ NSImage *NSImageFromIplImage(IplImage *iplImage) {
 	[self.captureSession stopRunning];
 }
 
-- (IplImage *)createNewImage:(IplImage *)iplImage {
+- (IplO *)createNewImage:(IplO *)iplImage {
+	IplO *grayImage = [[IplO alloc] initWithSizeParameterIplImage:iplImage depth:IPL_DEPTH_8U channels:1];
+	IplO *binaImage = [[IplO alloc] initWithSizeParameterIplImage:iplImage depth:IPL_DEPTH_8U channels:1];
+	cvCvtColor(iplImage.iplImage, grayImage.iplImage, CV_BGRA2GRAY);
+	cvThreshold(grayImage.iplImage, binaImage.iplImage, 64, 255, CV_THRESH_BINARY);
+
+	OCVSeq *contour = [binaImage findContrours:-1 type:-1];
+	OCVSeq *approxPoly = [contour approxPoly:0.001 recursive:NO];
+	[approxPoly startTreeNodeIterator];
+	int seqCount = 0;
+	for (OCVSeq *seq = [approxPoly nextIterator]; seq != nil; seq = [approxPoly nextIterator], seqCount++) {
+		NSLog(@"%d: points: %d", seqCount, seq.total);
+	}
+	cvDrawContours(iplImage.iplImage, contour.seq, CV_RGB(255, 0, 0), CV_RGB(0, 0, 255), 1, 2, 4, cvPoint(0, 0));
 	return iplImage;
 }
 
@@ -57,48 +62,26 @@ static __inline__ NSImage *NSImageFromIplImage(IplImage *iplImage) {
 	CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
 	CVPixelBufferLockBaseAddress(pixelBuffer, 0);
 
-	void *imagedata = CVPixelBufferGetBaseAddress(pixelBuffer);
-	size_t w = CVPixelBufferGetWidth(pixelBuffer);
-	size_t h = CVPixelBufferGetHeight(pixelBuffer);
-	size_t b = CVPixelBufferGetBytesPerRow(pixelBuffer);
-
-	IplImage *tmpimage = cvCreateImageHeader(cvSize((int)w, (int)h), IPL_DEPTH_8U, 4);
-	cvSetData(tmpimage, imagedata, (int)b);
-
+	IplO *iplO = [[IplO alloc] initWithPixelBuffer:pixelBuffer];
 	dispatch_semaphore_wait(self.imgCreaSemaphore, DISPATCH_TIME_FOREVER);
-	if (self.curImage != NULL)
-		cvReleaseImage(&_curImage);
-	self.curImage = cvCloneImage(tmpimage);
+	self.curImage = iplO;
 	dispatch_semaphore_signal(self.imgCreaSemaphore);
-
-	cvReleaseImageHeader(&tmpimage);
 
 	if (dispatch_semaphore_wait(self.imgProcSemaphore, DISPATCH_TIME_NOW) == 0) {
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			dispatch_semaphore_wait(self.imgCreaSemaphore, DISPATCH_TIME_FOREVER);
-			IplImage *prcImage = cvCloneImage(self.curImage);
+			IplO *prcImage = self.curImage;
 			dispatch_semaphore_signal(self.imgCreaSemaphore);
-			IplImage *newImage = [self createNewImage:prcImage];
-			NSImage *nsImage = NSImageFromIplImage(newImage);
+			IplO *newImage = [self createNewImage:prcImage];
+			NSImage *nsImage = newImage.NSImage;
 			dispatch_async(dispatch_get_main_queue(), ^{
 				self.imageView.hidden = NO;
 				self.imageView.image = nsImage;
 			});
-			if (prcImage == newImage)
-				cvReleaseImage(&prcImage);
-			else {
-				cvReleaseImage(&prcImage);
-				cvReleaseImage(&newImage);
-			}
 			dispatch_semaphore_signal(self.imgProcSemaphore);
 		});
 	}
 
 	CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
-}
-
-- (void)dealloc {
-	if (_curImage != NULL)
-		cvReleaseImage(&_curImage);
 }
 @end

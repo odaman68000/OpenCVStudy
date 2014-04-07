@@ -18,6 +18,9 @@
 		7244E4F118EE34A600C8EA14 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7244E4F018EE34A600C8EA14 /* CoreMedia.framework */; };
 		7244E4F418EE3AED00C8EA14 /* libopencv_core.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7244E4F218EE3AED00C8EA14 /* libopencv_core.dylib */; };
 		7244E4F518EE3AED00C8EA14 /* libopencv_imgproc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 7244E4F318EE3AED00C8EA14 /* libopencv_imgproc.dylib */; };
+		7244E4F818F2206E00C8EA14 /* IplO.m in Sources */ = {isa = PBXBuildFile; fileRef = 7244E4F718F2206E00C8EA14 /* IplO.m */; };
+		7244E4FD18F25C9F00C8EA14 /* OCVSeq.m in Sources */ = {isa = PBXBuildFile; fileRef = 7244E4FC18F25C9F00C8EA14 /* OCVSeq.m */; };
+		7244E50018F25CB600C8EA14 /* OCVMemStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = 7244E4FF18F25CB600C8EA14 /* OCVMemStorage.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +43,12 @@
 		7244E4F018EE34A600C8EA14 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		7244E4F218EE3AED00C8EA14 /* libopencv_core.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_core.dylib; path = ../../../../opt/local/lib/libopencv_core.dylib; sourceTree = "<group>"; };
 		7244E4F318EE3AED00C8EA14 /* libopencv_imgproc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_imgproc.dylib; path = ../../../../opt/local/lib/libopencv_imgproc.dylib; sourceTree = "<group>"; };
+		7244E4F618F2206E00C8EA14 /* IplO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = IplO.h; sourceTree = "<group>"; };
+		7244E4F718F2206E00C8EA14 /* IplO.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = IplO.m; sourceTree = "<group>"; };
+		7244E4FB18F25C9F00C8EA14 /* OCVSeq.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCVSeq.h; sourceTree = "<group>"; };
+		7244E4FC18F25C9F00C8EA14 /* OCVSeq.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCVSeq.m; sourceTree = "<group>"; };
+		7244E4FE18F25CB600C8EA14 /* OCVMemStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCVMemStorage.h; sourceTree = "<group>"; };
+		7244E4FF18F25CB600C8EA14 /* OCVMemStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCVMemStorage.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +111,7 @@
 		7244E4C018EE327000C8EA14 /* OpenCVStudy */ = {
 			isa = PBXGroup;
 			children = (
+				7244E4FA18F25C7600C8EA14 /* OpenCV */,
 				7244E4CC18EE327100C8EA14 /* AppDelegate.h */,
 				7244E4CD18EE327100C8EA14 /* AppDelegate.m */,
 				7244E4CF18EE327100C8EA14 /* MainMenu.xib */,
@@ -121,6 +131,19 @@
 				7244E4C918EE327000C8EA14 /* Credits.rtf */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		7244E4FA18F25C7600C8EA14 /* OpenCV */ = {
+			isa = PBXGroup;
+			children = (
+				7244E4FE18F25CB600C8EA14 /* OCVMemStorage.h */,
+				7244E4FF18F25CB600C8EA14 /* OCVMemStorage.m */,
+				7244E4FB18F25C9F00C8EA14 /* OCVSeq.h */,
+				7244E4FC18F25C9F00C8EA14 /* OCVSeq.m */,
+				7244E4F618F2206E00C8EA14 /* IplO.h */,
+				7244E4F718F2206E00C8EA14 /* IplO.m */,
+			);
+			name = OpenCV;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -190,7 +213,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				7244E4CE18EE327100C8EA14 /* AppDelegate.m in Sources */,
+				7244E4FD18F25C9F00C8EA14 /* OCVSeq.m in Sources */,
 				7244E4C718EE327000C8EA14 /* main.m in Sources */,
+				7244E50018F25CB600C8EA14 /* OCVMemStorage.m in Sources */,
+				7244E4F818F2206E00C8EA14 /* IplO.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,6 +383,7 @@
 				7244E4EA18EE327100C8EA14 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
