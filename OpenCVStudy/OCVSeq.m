@@ -10,6 +10,7 @@
 #import "OCVMemStorage.h"
 #import <opencv2/core/core_c.h>
 #import <opencv2/imgproc/imgproc_c.h>
+#import "IplO.h"
 
 @interface OCVSeq () {
 	CvTreeNodeIterator treeNodeIterator;
@@ -17,13 +18,17 @@
 @end
 
 @implementation OCVSeq
-- (id)init {
-	OCVMemStorage *memStorage = [[OCVMemStorage alloc] init];
-	return [self initWithMemStorage:memStorage];
-}
-
-- (id)initWithMemStorage:(OCVMemStorage *)memStorage {
-	return [self initWithCvSeq:NULL headerSize:sizeof(CvSeq) memStorage:memStorage];
+- (id)initWithType:(int)type {
+	OCVMemStorage *storage = [[OCVMemStorage alloc] init];
+	size_t elemSize = 0;
+	if (type == CV_SEQ_ELTYPE_POINT)
+		elemSize = sizeof(CvPoint);
+	else if (type == CV_SEQ_ELTYPE_POINT3D)
+		elemSize = sizeof(CvPoint3D32f);
+	else
+		return nil;
+	CvSeq *seq = cvCreateSeq(type, sizeof(CvSeq), elemSize, storage.memStorage);
+	return [self initWithCvSeq:seq headerSize:sizeof(CvSeq) memStorage:storage];
 }
 
 - (id)initWithCvSeq:(CvSeq *)seq headerSize:(int)headerSize memStorage:(OCVMemStorage *)memStorage {
@@ -33,11 +38,6 @@
 	_storage = memStorage;
 	_headerSize = headerSize;
 	return self;
-}
-
-- (id)approxPoly:(double)eps recursive:(BOOL)recursive {
-	CvSeq *seq = cvApproxPoly(_seq, _headerSize, _storage.memStorage, CV_POLY_APPROX_DP, eps, recursive ? 1 : 0);
-	return [[self.class alloc] initWithCvSeq:seq headerSize:_headerSize memStorage:_storage];
 }
 
 - (void)startTreeNodeIterator {
@@ -57,5 +57,40 @@
 
 - (CvPoint *)pointAt:(int)index {
 	return (CvPoint *)cvGetSeqElem(_seq, index);
+}
+
+- (id)pointSeq {
+	OCVSeq *newSeq = [[OCVSeq alloc] initWithType:CV_SEQ_ELTYPE_POINT];
+	for (int i = 0; i < _seq->total; i++) {
+		CvPoint *point = (CvPoint *)cvGetSeqElem(_seq, i);
+		cvSeqPush(newSeq.seq, point);
+	}
+	newSeq.baseSize = _baseSize;
+	return newSeq;
+}
+
+- (id)approxPoly:(double)eps recursive:(BOOL)recursive {
+	CvSeq *seq = cvApproxPoly(_seq, _headerSize, _storage.memStorage, CV_POLY_APPROX_DP, eps, recursive ? 1 : 0);
+	OCVSeq *newSeq = [[self.class alloc] initWithCvSeq:seq headerSize:_headerSize memStorage:_storage];
+	newSeq.baseSize = _baseSize;
+	return newSeq;
+}
+
+- (id)convexHull2:(BOOL)clockwise {
+	CvSeq *hull = cvConvexHull2(_seq, NULL, clockwise ? CV_CLOCKWISE : CV_COUNTER_CLOCKWISE, 0);
+	OCVSeq *newSeq = [[self.class alloc] initWithCvSeq:hull headerSize:0 memStorage:_storage];
+	newSeq.baseSize = _baseSize;
+	return newSeq;
+}
+
+- (id)debugQuickLookObject {
+	if (_seq == NULL)
+		return nil;
+	if (_baseSize.width <= 0 || _baseSize.height <= 0)
+		return nil;
+	IplO *img = [[IplO alloc] initWithWidth:_baseSize.width height:_baseSize.height depth:IPL_DEPTH_8U channels:4];
+	[img clear];
+	[img drawContours:self lineWidth:2 extColor:CV_RGB(255, 0, 0) holeColor:CV_RGB(0, 255, 0) depth:10];
+	return [img NSImage];
 }
 @end

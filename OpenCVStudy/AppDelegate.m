@@ -53,7 +53,6 @@
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
 	CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-	CVPixelBufferLockBaseAddress(pixelBuffer, 0);
 	self.curImage = [[IplO alloc] initWithPixelBuffer:pixelBuffer];
 	if (dispatch_semaphore_wait(self.imgProcSemaphore, DISPATCH_TIME_NOW) == 0) {
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -66,6 +65,5 @@
 			dispatch_semaphore_signal(self.imgProcSemaphore);
 		});
 	}
-	CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
 }
 @end

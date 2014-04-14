@@ -15,12 +15,13 @@
 @property (nonatomic, assign) CvSeq *seq;
 @property (nonatomic, strong) OCVMemStorage *storage;
 @property (nonatomic, assign) int headerSize;
-- (id)init;
-- (id)initWithMemStorage:(OCVMemStorage *)memStorage;
+@property (nonatomic, assign) CvSize baseSize;
 - (id)initWithCvSeq:(CvSeq *)seq headerSize:(int)headerSize memStorage:(OCVMemStorage *)memStorage;
-- (id)approxPoly:(double)eps recursive:(BOOL)recursive;
 - (void)startTreeNodeIterator;
-- (OCVSeq *)nextIterator;
+- (id)nextIterator;
 - (int)total;
 - (CvPoint *)pointAt:(int)index;
+- (id)pointSeq;
+- (id)approxPoly:(double)eps recursive:(BOOL)recursive;
+- (id)convexHull2:(BOOL)clockwise;
 @end

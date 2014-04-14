@@ -25,6 +25,7 @@
 - (id)initWithParameterIplImage:(IplO *)iplO;
 - (id)initWithSizeParameterIplImage:(IplO *)iplO depth:(int)depth channels:(int)channels;
 - (id)initWithPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+- (void)clear;
 - (id)blackAndWhite:(double)threshold;
 - (id)grayscale;
 - (OCVSeq *)findContrours:(int)mode type:(int)method;

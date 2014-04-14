@@ -58,15 +58,22 @@
 }
 
 - (id)initWithPixelBuffer:(CVPixelBufferRef)pixelBuffer {
+	CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 	void *imagedata = CVPixelBufferGetBaseAddress(pixelBuffer);
 	int w = (int)CVPixelBufferGetWidth(pixelBuffer);
 	int h = (int)CVPixelBufferGetHeight(pixelBuffer);
 	int b = (int)CVPixelBufferGetBytesPerRow(pixelBuffer);
-	return [self initWithBytes:imagedata width:w height:h bytesPerRow:b depth:IPL_DEPTH_8U channels:4];
+	id image = [self initWithBytes:imagedata width:w height:h bytesPerRow:b depth:IPL_DEPTH_8U channels:4];
+	CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
+	return image;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
 	return [[self.class allocWithZone:zone] initWithIplImage:_iplImage];
+}
+
+- (void)clear {
+	cvZero(_iplImage);
 }
 
 - (OCVSeq *)findContrours:(int)mode type:(int)method  {
@@ -78,7 +85,9 @@
 	if (method < 0)
 		method = CV_CHAIN_APPROX_SIMPLE;
 	cvFindContours(_iplImage, st.memStorage, (CvSeq **)&cvContour, sizeof(*cvContour), mode, method, cvPoint(0, 0));
-	return [[OCVSeq alloc] initWithCvSeq:(CvSeq *)cvContour headerSize:sizeof(*cvContour) memStorage:st];
+	OCVSeq *ocvSeq = [[OCVSeq alloc] initWithCvSeq:(CvSeq *)cvContour headerSize:sizeof(*cvContour) memStorage:st];
+	ocvSeq.baseSize = cvSize(_width, _height);
+	return ocvSeq;
 }
 
 - (void)drawContours:(OCVSeq *)contours lineWidth:(int)lineWidth extColor:(CvScalar)extColor holeColor:(CvScalar)holeColor depth:(int)depth {
@@ -140,6 +149,11 @@
 - (NSImage *)NSImage {
 	CGImageRef cgimage = [self CGImage];
 	return [[NSImage alloc] initWithCGImage:cgimage size:NSZeroSize];
+}
+
+- (id)debugQuickLookObject {
+	NSImage *debugImage = [self NSImage];
+	return debugImage;
 }
 
 - (void)dealloc {
