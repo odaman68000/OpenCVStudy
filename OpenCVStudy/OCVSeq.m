@@ -7,7 +7,7 @@
 //
 
 #import "OCVSeq.h"
-#import "OCVMemStorage.h"
+#import "OCVStorage.h"
 #import <opencv2/core/core_c.h>
 #import <opencv2/imgproc/imgproc_c.h>
 #import "IplO.h"
@@ -19,7 +19,7 @@
 
 @implementation OCVSeq
 - (id)initWithType:(int)type {
-	OCVMemStorage *storage = [[OCVMemStorage alloc] init];
+	OCVStorage *storage = [[OCVStorage alloc] init];
 	size_t elemSize = 0;
 	if (type == CV_SEQ_ELTYPE_POINT)
 		elemSize = sizeof(CvPoint);
@@ -31,7 +31,7 @@
 	return [self initWithCvSeq:seq headerSize:sizeof(CvSeq) memStorage:storage];
 }
 
-- (id)initWithCvSeq:(CvSeq *)seq headerSize:(int)headerSize memStorage:(OCVMemStorage *)memStorage {
+- (id)initWithCvSeq:(CvSeq *)seq headerSize:(int)headerSize memStorage:(OCVStorage *)memStorage {
 	if ((self = [super init]) == nil)
 		return nil;
 	_seq = seq;

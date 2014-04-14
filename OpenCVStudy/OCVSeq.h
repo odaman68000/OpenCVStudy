@@ -9,14 +9,14 @@
 #import <Foundation/Foundation.h>
 #import <opencv2/core/core_c.h>
 
-@class OCVMemStorage;
+@class OCVStorage;
 
 @interface OCVSeq : NSObject
 @property (nonatomic, assign) CvSeq *seq;
-@property (nonatomic, strong) OCVMemStorage *storage;
+@property (nonatomic, strong) OCVStorage *storage;
 @property (nonatomic, assign) int headerSize;
 @property (nonatomic, assign) CvSize baseSize;
-- (id)initWithCvSeq:(CvSeq *)seq headerSize:(int)headerSize memStorage:(OCVMemStorage *)memStorage;
+- (id)initWithCvSeq:(CvSeq *)seq headerSize:(int)headerSize memStorage:(OCVStorage *)memStorage;
 - (void)startTreeNodeIterator;
 - (id)nextIterator;
 - (int)total;

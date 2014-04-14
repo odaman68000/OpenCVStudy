@@ -6,9 +6,9 @@
 //  Copyright (c) 2014年 織田 哲男. All rights reserved.
 //
 
-#import "OCVMemStorage.h"
+#import "OCVStorage.h"
 
-@implementation OCVMemStorage
+@implementation OCVStorage
 - (id)init {
 	CvMemStorage *memStorage = cvCreateMemStorage(0);
 	return [self initWithMemStorage:memStorage];

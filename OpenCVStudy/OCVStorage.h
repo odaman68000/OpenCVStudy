@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <opencv2/core/core_c.h>
 
-@interface OCVMemStorage : NSObject
+@interface OCVStorage : NSObject
 @property (nonatomic, assign) CvMemStorage *memStorage;
 - (id)init;
 - (id)initWithMemStorage:(CvMemStorage *)memStorage;

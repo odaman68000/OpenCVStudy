@@ -8,7 +8,7 @@
 
 #import "IplO.h"
 #import <opencv2/imgproc/imgproc_c.h>
-#import "OCVMemStorage.h"
+#import "OCVStorage.h"
 #import "OCVSeq.h"
 
 @interface IplO ()
@@ -78,7 +78,7 @@
 
 - (OCVSeq *)findContrours:(int)mode type:(int)method  {
 	NSAssert(_channels == 1, @"%@: image channel should be 1.", NSStringFromClass(self.class));
-	OCVMemStorage *st = [[OCVMemStorage alloc] init];
+	OCVStorage *st = [[OCVStorage alloc] init];
 	CvContour *cvContour = NULL;
 	if (mode < 0)
 		mode = CV_RETR_LIST;
