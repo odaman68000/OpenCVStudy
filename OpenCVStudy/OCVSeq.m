@@ -69,8 +69,8 @@
 	return newSeq;
 }
 
-- (id)approxPoly:(double)eps recursive:(BOOL)recursive {
-	CvSeq *seq = cvApproxPoly(_seq, _headerSize, _storage.memStorage, CV_POLY_APPROX_DP, eps, recursive ? 1 : 0);
+- (id)approxPoly:(double)eps recursive:(int)recursive {
+	CvSeq *seq = cvApproxPoly(_seq, _headerSize, _storage.memStorage, CV_POLY_APPROX_DP, eps, recursive);
 	OCVSeq *newSeq = [[self.class alloc] initWithCvSeq:seq headerSize:_headerSize memStorage:_storage];
 	newSeq.baseSize = _baseSize;
 	return newSeq;

@@ -22,6 +22,6 @@
 - (int)total;
 - (CvPoint *)pointAt:(int)index;
 - (id)pointSeq;
-- (id)approxPoly:(double)eps recursive:(BOOL)recursive;
+- (id)approxPoly:(double)eps recursive:(int)recursive;
 - (id)convexHull2:(BOOL)clockwise;
 @end

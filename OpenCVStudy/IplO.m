@@ -112,6 +112,12 @@
 	return newImage;
 }
 
+- (id)not {
+	IplO *newImage = [[self.class alloc] initWithParameterIplImage:self];
+	cvNot(_iplImage, newImage.iplImage);
+	return newImage;
+}
+
 - (CGImageRef)CGImage {
 	CGColorSpaceRef colorspace = NULL;
 	CGBitmapInfo bitmapInfo = 0;
