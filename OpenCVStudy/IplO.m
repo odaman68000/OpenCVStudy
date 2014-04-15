@@ -8,6 +8,7 @@
 
 #import "IplO.h"
 #import <opencv2/imgproc/imgproc_c.h>
+#import <opencv2/legacy/legacy.hpp>
 #import "OCVStorage.h"
 #import "OCVSeq.h"
 
@@ -94,22 +95,22 @@
 	cvDrawContours(_iplImage, contours.seq, extColor, holeColor, depth, lineWidth, 4, cvPoint(0, 0));
 }
 
-- (id)blackAndWhite:(double)threshold {
-	IplO *grayscale = [self grayscale];
-	IplO *newImage = [[self.class alloc] initWithSizeParameterIplImage:grayscale depth:IPL_DEPTH_8U channels:1];
-	cvThreshold(grayscale.iplImage, newImage.iplImage, threshold, 255, (threshold < 0) ? CV_THRESH_OTSU : CV_THRESH_BINARY);
-	return newImage;
+- (id)pyrSegmentation:(OCVSeq **)seqO {
+	OCVStorage *st = [[OCVStorage alloc] init];
+	CvSeq *seq = NULL;
+	IplO *src = [self BGRImage];
+	IplO *dst = [src copy];
+	cvPyrSegmentation(src.iplImage, dst.iplImage, st.memStorage, &seq, 4, 255.0, 50.0);
+	if (seqO != nil)
+		*seqO = [[OCVSeq alloc] initWithCvSeq:seq headerSize:sizeof(*seq) memStorage:st];
+	return dst;
 }
 
-- (id)grayscale {
-	if (_channels == 1)
-		return self;
-	int cnv = CV_BGRA2GRAY;
-	if (_channels == 3)
-		cnv = CV_BGR2GRAY;
-	IplO *newImage = [[self.class alloc] initWithSizeParameterIplImage:self depth:IPL_DEPTH_8U channels:1];
-	cvCvtColor(_iplImage, newImage.iplImage, cnv);
-	return newImage;
+- (id)pyrMeanShiftFiltering {
+	IplO *src = [self BGRImage];
+	IplO *dst = [src copy];
+	cvPyrMeanShiftFiltering(src.iplImage, dst.iplImage, 30.0, 30.0, 2, cvTermCriteria(CV_TERMCRIT_ITER + CV_TERMCRIT_EPS, 5, 1));
+	return dst;
 }
 
 - (id)not {
@@ -118,7 +119,47 @@
 	return newImage;
 }
 
-- (CGImageRef)CGImage {
+- (id)blackAndWhite:(double)threshold {
+	IplO *grayscale = [self grayscale];
+	IplO *newImage = [[self.class alloc] initWithSizeParameterIplImage:grayscale depth:IPL_DEPTH_8U channels:1];
+	cvThreshold(grayscale.iplImage, newImage.iplImage, threshold, 255, (threshold < 0) ? CV_THRESH_OTSU : CV_THRESH_BINARY);
+	return newImage;
+}
+
+- (id)grayscale {
+	int cnv = CV_BGRA2GRAY;
+	if (_channels == 1)
+		return self;
+	else if (_channels == 3)
+		cnv = CV_BGR2GRAY;
+	IplO *newImage = [[self.class alloc] initWithSizeParameterIplImage:self depth:IPL_DEPTH_8U channels:1];
+	cvCvtColor(_iplImage, newImage.iplImage, cnv);
+	return newImage;
+}
+
+- (id)BGRImage {
+	int cnv = CV_BGRA2BGR;
+	if (_channels == 1)
+		cnv = CV_GRAY2BGR;
+	else if (_channels == 3)
+		return self;
+	IplO *newImage = [[self.class alloc] initWithSizeParameterIplImage:self depth:IPL_DEPTH_8U channels:3];
+	cvCvtColor(_iplImage, newImage.iplImage, cnv);
+	return newImage;
+}
+
+- (id)BGRAImage {
+	int cnv = CV_BGR2BGRA;
+	if (_channels == 1)
+		cnv = CV_GRAY2BGRA;
+	else if (_channels == 4)
+		return self;
+	IplO *newImage = [[self.class alloc] initWithSizeParameterIplImage:self depth:IPL_DEPTH_8U channels:4];
+	cvCvtColor(_iplImage, newImage.iplImage, cnv);
+	return newImage;
+}
+
+- (CGImageRef)createCGImage {
 	CGColorSpaceRef colorspace = NULL;
 	CGBitmapInfo bitmapInfo = 0;
 	int componentBits = 8;
@@ -131,6 +172,14 @@
 			colorspace = [NSColorSpace genericGrayColorSpace].CGColorSpace;
 			bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
 			componentBits = 16;
+		} else if (_depth == IPL_DEPTH_32S) {
+			colorspace = [NSColorSpace genericGrayColorSpace].CGColorSpace;
+			bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
+			iplImage = cvCreateImage(cvGetSize(self.iplImage), IPL_DEPTH_8U, 1);
+			float *fptr = (float *)_iplImage->imageData;
+			unsigned char *cptr = (unsigned char *)iplImage->imageData;
+			for (int i = iplImage->imageSize; i != 0; i--, cptr++, fptr++)
+				*cptr = (*fptr < 0) ? 0xff : 0x00;
 		}
 	} else if (_channels == 3) {
 		colorspace = [NSColorSpace genericRGBColorSpace].CGColorSpace;
@@ -144,17 +193,24 @@
 	CGContextRef context = CGBitmapContextCreate(iplImage->imageData, iplImage->width, iplImage->height, componentBits, iplImage->widthStep, colorspace, bitmapInfo);
 	CGImageRef newCGImage = CGBitmapContextCreateImage(context);
 	CGContextRelease(context);
-	if (_cgimage != NULL)
-		CGImageRelease(_cgimage);
-	_cgimage = newCGImage;
 	if (iplImage != _iplImage)
 		cvReleaseImage(&iplImage);
-	return _cgimage;
+	return newCGImage;
+}
+
+- (CGImageRef)CGImage {
+	@synchronized(self) {
+		if (_cgimage != NULL)
+			_cgimage = [self createCGImage];
+		return _cgimage;
+	}
 }
 
 - (NSImage *)NSImage {
-	CGImageRef cgimage = [self CGImage];
-	return [[NSImage alloc] initWithCGImage:cgimage size:NSZeroSize];
+	CGImageRef cgimage = [self createCGImage];
+	NSImage *newImage = [[NSImage alloc] initWithCGImage:cgimage size:NSZeroSize];
+	CGImageRelease(cgimage);
+	return newImage;
 }
 
 - (id)debugQuickLookObject {

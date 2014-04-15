@@ -10,11 +10,13 @@
 #import <AVFoundation/AVFoundation.h>
 #import <opencv2/core/core_c.h>
 #import <opencv2/imgproc/imgproc_c.h>
+#import "OCV.h"
 #import "IplO.h"
 #import "OCVSeq.h"
 
 @interface AppDelegate () <AVCaptureVideoDataOutputSampleBufferDelegate>
 @property (nonatomic, weak) IBOutlet NSImageView *imageView;
+@property (nonatomic, assign) int frames;
 @property (nonatomic, strong) AVCaptureSession *captureSession;
 @property (nonatomic, strong) dispatch_semaphore_t imgProcSemaphore;
 @property (atomic, strong) IplO *curImage;
@@ -32,6 +34,13 @@
 	[self.captureSession addInput:cameraInput];
 	[self.captureSession addOutput:dataOutput];
 	[self.captureSession startRunning];
+	NSTimer *timer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(timer:) userInfo:nil repeats:YES];
+	[[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
+}
+
+- (void)timer:(NSTimer *)timer {
+	NSLog(@"%d frames/sec", self.frames);
+	self.frames = 0;
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification {
@@ -39,21 +48,17 @@
 }
 
 - (IplO *)createNewImage:(IplO *)iplImage {
-	IplO *binaImage = [iplImage blackAndWhite:64];
-	OCVSeq *contour = [binaImage findContrours:-1 type:-1];
-	OCVSeq *approxPoly = [contour approxPoly:0.001 recursive:NO];
-	[approxPoly startTreeNodeIterator];
-	int seqCount = 0;
-	for (OCVSeq *seq = [approxPoly nextIterator]; seq != nil; seq = [approxPoly nextIterator], seqCount++)
-		NSLog(@"%d: points: %d", seqCount, seq.total);
-	[iplImage drawContours:contour lineWidth:2 extColor:CV_RGB(255, 0, 0) holeColor:CV_RGB(0, 0, 255) depth:1];
-	return iplImage;
+	IplO *binaImage = [[iplImage blackAndWhite:64] not];
+	OCVSeq *contour = [[binaImage copy] findContrours:-1 type:-1];
+	OCVSeq *approxPoly = [contour approxPoly:25.0 recursive:1];
+	IplO *newImage = [iplImage copy];
+	[newImage drawContours:approxPoly lineWidth:2 extColor:[NSColor redColor].cvScalar holeColor:[NSColor greenColor].cvScalar depth:10];
+	return newImage;
 }
 
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
-	CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-	self.curImage = [[IplO alloc] initWithPixelBuffer:pixelBuffer];
+	self.curImage = [[IplO alloc] initWithPixelBuffer:CMSampleBufferGetImageBuffer(sampleBuffer)];
 	if (dispatch_semaphore_wait(self.imgProcSemaphore, DISPATCH_TIME_NOW) == 0) {
 		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
 			IplO *newImage = [self createNewImage:self.curImage];
@@ -62,6 +67,7 @@
 				self.imageView.hidden = NO;
 				self.imageView.image = nsImage;
 			});
+			self.frames++;
 			dispatch_semaphore_signal(self.imgProcSemaphore);
 		});
 	}

@@ -31,6 +31,9 @@
 - (id)not;
 - (OCVSeq *)findContrours:(int)mode type:(int)method;
 - (void)drawContours:(OCVSeq *)contours lineWidth:(int)lineWidth extColor:(CvScalar)extColor holeColor:(CvScalar)holeColor depth:(int)depth;
+- (id)pyrSegmentation:(OCVSeq **)seqO;
+- (id)pyrMeanShiftFiltering;
+- (id)BGRImage;
 - (CGImageRef)CGImage;
 - (NSImage *)NSImage;
 @end

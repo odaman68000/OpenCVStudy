@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		720920B718FBBEBE0002F041 /* OCV.m in Sources */ = {isa = PBXBuildFile; fileRef = 720920B618FBBEBE0002F041 /* OCV.m */; };
+		720920B918FCAB400002F041 /* libopencv_legacy.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 720920B818FCAB400002F041 /* libopencv_legacy.dylib */; };
 		7244E4BB18EE327000C8EA14 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7244E4BA18EE327000C8EA14 /* Cocoa.framework */; };
 		7244E4C518EE327000C8EA14 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7244E4C318EE327000C8EA14 /* InfoPlist.strings */; };
 		7244E4C718EE327000C8EA14 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7244E4C618EE327000C8EA14 /* main.m */; };
@@ -24,6 +26,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		720920B518FBBEBE0002F041 /* OCV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCV.h; sourceTree = "<group>"; };
+		720920B618FBBEBE0002F041 /* OCV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCV.m; sourceTree = "<group>"; };
+		720920B818FCAB400002F041 /* libopencv_legacy.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_legacy.dylib; path = ../../../../opt/local/lib/libopencv_legacy.dylib; sourceTree = "<group>"; };
 		7244E4B718EE327000C8EA14 /* OpenCVStudy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenCVStudy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7244E4BA18EE327000C8EA14 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		7244E4BD18EE327000C8EA14 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -58,6 +63,7 @@
 			files = (
 				7244E4F418EE3AED00C8EA14 /* libopencv_core.dylib in Frameworks */,
 				7244E4F518EE3AED00C8EA14 /* libopencv_imgproc.dylib in Frameworks */,
+				720920B918FCAB400002F041 /* libopencv_legacy.dylib in Frameworks */,
 				7244E4F118EE34A600C8EA14 /* CoreMedia.framework in Frameworks */,
 				7244E4EF18EE34A000C8EA14 /* AVFoundation.framework in Frameworks */,
 				7244E4BB18EE327000C8EA14 /* Cocoa.framework in Frameworks */,
@@ -87,6 +93,7 @@
 		7244E4B918EE327000C8EA14 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				720920B818FCAB400002F041 /* libopencv_legacy.dylib */,
 				7244E4F218EE3AED00C8EA14 /* libopencv_core.dylib */,
 				7244E4F318EE3AED00C8EA14 /* libopencv_imgproc.dylib */,
 				7244E4F018EE34A600C8EA14 /* CoreMedia.framework */,
@@ -136,6 +143,8 @@
 		7244E4FA18F25C7600C8EA14 /* OpenCV */ = {
 			isa = PBXGroup;
 			children = (
+				720920B518FBBEBE0002F041 /* OCV.h */,
+				720920B618FBBEBE0002F041 /* OCV.m */,
 				7244E4FE18F25CB600C8EA14 /* OCVStorage.h */,
 				7244E4FF18F25CB600C8EA14 /* OCVStorage.m */,
 				7244E4FB18F25C9F00C8EA14 /* OCVSeq.h */,
@@ -212,6 +221,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				720920B718FBBEBE0002F041 /* OCV.m in Sources */,
 				7244E4CE18EE327100C8EA14 /* AppDelegate.m in Sources */,
 				7244E4FD18F25C9F00C8EA14 /* OCVSeq.m in Sources */,
 				7244E4C718EE327000C8EA14 /* main.m in Sources */,
@@ -332,6 +342,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OpenCVStudy/OpenCVStudy-Prefix.pch";
 				INFOPLIST_FILE = "OpenCVStudy/OpenCVStudy-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -345,6 +359,10 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "OpenCVStudy/OpenCVStudy-Prefix.pch";
 				INFOPLIST_FILE = "OpenCVStudy/OpenCVStudy-Info.plist";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/opt/local/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
