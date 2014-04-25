@@ -18,6 +18,8 @@
 
 @implementation IplO
 - (id)initWithIplImageWithoutCopy:(IplImage *)iplImage {
+	if (iplImage == NULL)
+		return nil;
 	if ((self = [super init]) == nil)
 		return nil;
 	_iplImage = iplImage;
@@ -31,26 +33,36 @@
 }
 
 - (id)initWithIplImage:(IplImage *)iplImage {
+	if (iplImage == NULL)
+		return nil;
 	IplImage *newIplImage = cvCloneImage(iplImage);
 	return [self initWithIplImageWithoutCopy:newIplImage];
 }
 
 - (id)initWithWidth:(int)width height:(int)height depth:(int)depth channels:(int)channels {
+	if (width <= 0 || height <= 0 || depth <= 0 || channels <= 0)
+		return nil;
 	IplImage *iplImage = cvCreateImage(cvSize(width, height), depth, channels);
 	return [self initWithIplImageWithoutCopy:iplImage];
 }
 
 - (id)initWithParameterIplImage:(IplO *)iplO {
+	if (iplO == nil)
+		return nil;
 	IplImage *iplImage = cvCreateImage(cvGetSize(iplO.iplImage), iplO.depth, iplO.channels);
 	return [self initWithIplImageWithoutCopy:iplImage];
 }
 
 - (id)initWithSizeParameterIplImage:(IplO *)iplO depth:(int)depth channels:(int)channels {
+	if (iplO == nil || depth <= 0 || channels <= 0)
+		return nil;
 	IplImage *iplImage = cvCreateImage(cvGetSize(iplO.iplImage), depth, channels);
 	return [self initWithIplImageWithoutCopy:iplImage];
 }
 
 - (id)initWithBytes:(const void *)bytes width:(int)width height:(int)height bytesPerRow:(int)bytesPerRow depth:(int)depth channels:(int)channels {
+	if (bytes == NULL || width <= 0 || height <= 0 || bytesPerRow <= 0 || depth <= 0 || channels <= 0)
+		return nil;
 	IplImage iplHeader;
 	cvInitImageHeader(&iplHeader, cvSize(width, height), depth, channels, 0, 4);
 	cvSetData(&iplHeader, (void *)bytes, bytesPerRow);
@@ -59,6 +71,8 @@
 }
 
 - (id)initWithPixelBuffer:(CVPixelBufferRef)pixelBuffer {
+	if (pixelBuffer == NULL)
+		return nil;
 	CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 	void *imagedata = CVPixelBufferGetBaseAddress(pixelBuffer);
 	int w = (int)CVPixelBufferGetWidth(pixelBuffer);

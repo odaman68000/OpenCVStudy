@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		720920B718FBBEBE0002F041 /* OCV.m in Sources */ = {isa = PBXBuildFile; fileRef = 720920B618FBBEBE0002F041 /* OCV.m */; };
 		720920B918FCAB400002F041 /* libopencv_legacy.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 720920B818FCAB400002F041 /* libopencv_legacy.dylib */; };
+		72394376190A35CE00681CDA /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 72394374190A35CE00681CDA /* LICENSE */; };
+		72394377190A35CE00681CDA /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 72394375190A35CE00681CDA /* README.md */; };
 		7244E4BB18EE327000C8EA14 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7244E4BA18EE327000C8EA14 /* Cocoa.framework */; };
 		7244E4C518EE327000C8EA14 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7244E4C318EE327000C8EA14 /* InfoPlist.strings */; };
 		7244E4C718EE327000C8EA14 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7244E4C618EE327000C8EA14 /* main.m */; };
@@ -29,6 +31,8 @@
 		720920B518FBBEBE0002F041 /* OCV.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OCV.h; sourceTree = "<group>"; };
 		720920B618FBBEBE0002F041 /* OCV.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OCV.m; sourceTree = "<group>"; };
 		720920B818FCAB400002F041 /* libopencv_legacy.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopencv_legacy.dylib; path = ../../../../opt/local/lib/libopencv_legacy.dylib; sourceTree = "<group>"; };
+		72394374190A35CE00681CDA /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		72394375190A35CE00681CDA /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		7244E4B718EE327000C8EA14 /* OpenCVStudy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenCVStudy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7244E4BA18EE327000C8EA14 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		7244E4BD18EE327000C8EA14 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -77,6 +81,8 @@
 			isa = PBXGroup;
 			children = (
 				7244E4C018EE327000C8EA14 /* OpenCVStudy */,
+				72394374190A35CE00681CDA /* LICENSE */,
+				72394375190A35CE00681CDA /* README.md */,
 				7244E4B918EE327000C8EA14 /* Frameworks */,
 				7244E4B818EE327000C8EA14 /* Products */,
 			);
@@ -207,10 +213,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72394377190A35CE00681CDA /* README.md in Resources */,
 				7244E4C518EE327000C8EA14 /* InfoPlist.strings in Resources */,
 				7244E4D318EE327100C8EA14 /* Images.xcassets in Resources */,
 				7244E4CB18EE327000C8EA14 /* Credits.rtf in Resources */,
 				7244E4D118EE327100C8EA14 /* MainMenu.xib in Resources */,
+				72394376190A35CE00681CDA /* LICENSE in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

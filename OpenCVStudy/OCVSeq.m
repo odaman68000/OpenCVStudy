@@ -32,6 +32,8 @@
 }
 
 - (id)initWithCvSeq:(CvSeq *)seq headerSize:(int)headerSize memStorage:(OCVStorage *)memStorage {
+	if (seq == NULL || headerSize <= 0 || memStorage == nil)
+		return nil;
 	if ((self = [super init]) == nil)
 		return nil;
 	_seq = seq;
@@ -59,6 +61,40 @@
 	return (CvPoint *)cvGetSeqElem(_seq, index);
 }
 
+- (NSArray *)arrayOfCvPointNSValue {
+	const int total = _seq->total;
+	NSMutableArray *array = [NSMutableArray arrayWithCapacity:total];
+	for (int i = 0; i < total; i++) {
+		CvPoint point = *(CvPoint *)cvGetSeqElem(_seq, i);
+		NSValue *value = [NSValue valueWithBytes:&point objCType:@encode(CvPoint)];
+		[array addObject:value];
+	}
+	return array;
+}
+
+- (NSArray *)arrayOfCGPointNSValue {
+	const int total = _seq->total;
+	NSMutableArray *array = [NSMutableArray arrayWithCapacity:total];
+	for (int i = 0; i < total; i++) {
+		CvPoint cvpoint = *(CvPoint *)cvGetSeqElem(_seq, i);
+		CGPoint point = CGPointMake(cvpoint.x, cvpoint.y);
+		NSValue *value = [NSValue valueWithBytes:&point objCType:@encode(CGPoint)];
+		[array addObject:value];
+	}
+	return array;
+}
+
+- (NSData *)memoryBlockOfCvPointArray {
+	const int total = _seq->total;
+	CvPoint *point = malloc(sizeof(CvPoint) * total);
+	if (point == NULL)
+		return nil;
+	CvPoint *pPoint = point;
+	for (int i = 0; i < total; i++, pPoint++)
+		*pPoint = *(CvPoint *)cvGetSeqElem(_seq, i);
+	return [NSData dataWithBytesNoCopy:point length:sizeof(CvPoint) * total];
+}
+
 - (id)pointSeq {
 	OCVSeq *newSeq = [[OCVSeq alloc] initWithType:CV_SEQ_ELTYPE_POINT];
 	for (int i = 0; i < _seq->total; i++) {
@@ -84,8 +120,6 @@
 }
 
 - (id)debugQuickLookObject {
-	if (_seq == NULL)
-		return nil;
 	if (_baseSize.width <= 0 || _baseSize.height <= 0)
 		return nil;
 	IplO *img = [[IplO alloc] initWithWidth:_baseSize.width height:_baseSize.height depth:IPL_DEPTH_8U channels:4];
