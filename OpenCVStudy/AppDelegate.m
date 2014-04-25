@@ -16,6 +16,7 @@
 
 @interface AppDelegate () <AVCaptureVideoDataOutputSampleBufferDelegate>
 @property (nonatomic, weak) IBOutlet NSImageView *imageView;
+@property (nonatomic, weak) IBOutlet NSTextField *framesPerSecTextField;
 @property (nonatomic, assign) int frames;
 @property (nonatomic, strong) AVCaptureSession *captureSession;
 @property (nonatomic, strong) dispatch_semaphore_t imgProcSemaphore;
@@ -39,8 +40,10 @@
 }
 
 - (void)timer:(NSTimer *)timer {
-	NSLog(@"%d frames/sec", self.frames);
-	self.frames = 0;
+	dispatch_async(dispatch_get_main_queue(), ^{
+		self.framesPerSecTextField.intValue = self.frames;
+		self.frames = 0;
+	});
 }
 
 - (void)applicationWillTerminate:(NSNotification *)notification {
