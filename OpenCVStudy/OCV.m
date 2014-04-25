@@ -10,7 +10,7 @@
 
 @implementation NSColor (OCVExtension)
 + (id)colorWithCvScalar:(CvScalar)cvScalar {
-	return [NSColor colorWithCalibratedRed:cvScalar.val[0] / 255.0 green:cvScalar.val[1] / 255.0 blue:cvScalar.val[2] / 255.0 alpha:cvScalar.val[3] / 255.0];
+	return [self colorWithCalibratedRed:cvScalar.val[0] / 255.0 green:cvScalar.val[1] / 255.0 blue:cvScalar.val[2] / 255.0 alpha:cvScalar.val[3] / 255.0];
 }
 
 - (CvScalar)cvScalar {

@@ -21,6 +21,9 @@
 - (id)nextIterator;
 - (int)total;
 - (CvPoint *)pointAt:(int)index;
+- (NSArray *)arrayOfCvPointNSValue;
+- (NSArray *)arrayOfCGPointNSValue;
+- (NSData *)memoryBlockOfCvPointArray;
 - (id)pointSeq;
 - (id)approxPoly:(double)eps recursive:(int)recursive;
 - (id)convexHull2:(BOOL)clockwise;

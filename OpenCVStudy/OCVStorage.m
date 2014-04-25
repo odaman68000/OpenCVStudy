@@ -15,6 +15,8 @@
 }
 
 - (id)initWithMemStorage:(CvMemStorage *)memStorage {
+	if (memStorage == NULL)
+		return nil;
 	if ((self = [super init]) == nil)
 		return nil;
 	_memStorage = memStorage;
