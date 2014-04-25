@@ -49,11 +49,12 @@
 
 - (IplO *)createNewImage:(IplO *)iplImage {
 	IplO *binaImage = [[iplImage blackAndWhite:64] not];
+	binaImage = [binaImage erodeWithShape:CV_SHAPE_RECT size:cvSize(20, 20) anchor:cvPoint(0, 0) iterations:1];
 	OCVSeq *contour = [[binaImage copy] findContrours:-1 type:-1];
-	OCVSeq *approxPoly = [contour approxPoly:25.0 recursive:1];
-	IplO *newImage = [iplImage copy];
-	[newImage drawContours:approxPoly lineWidth:2 extColor:[NSColor redColor].cvScalar holeColor:[NSColor greenColor].cvScalar depth:10];
-	return newImage;
+	OCVSeq *approxPoly = [contour approxPoly:5.0 recursive:1];
+	IplO *retImage = [iplImage copy];
+	[retImage drawContours:approxPoly lineWidth:2 extColor:[NSColor redColor].cvScalar holeColor:[NSColor greenColor].cvScalar depth:10];
+	return retImage;
 }
 
 

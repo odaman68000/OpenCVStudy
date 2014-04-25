@@ -113,6 +113,26 @@
 	return dst;
 }
 
+- (id)erodeWithShape:(int)shape size:(CvSize)size anchor:(CvPoint)anchor iterations:(int)iterations {
+	IplO *dst = [self copy];
+	IplConvKernel *kernel = cvCreateStructuringElementEx(size.width, size.height, anchor.x, anchor.y, shape, NULL);
+	if (kernel != NULL) {
+		cvErode(_iplImage, dst.iplImage, kernel, iterations);
+		cvReleaseStructuringElement(&kernel);
+	}
+	return dst;
+}
+
+- (id)dilateWithShape:(int)shape size:(CvSize)size anchor:(CvPoint)anchor iterations:(int)iterations {
+	IplO *dst = [self copy];
+	IplConvKernel *kernel = cvCreateStructuringElementEx(size.width, size.height, anchor.x, anchor.y, shape, NULL);
+	if (kernel != NULL) {
+		cvDilate(_iplImage, dst.iplImage, kernel, iterations);
+		cvReleaseStructuringElement(&kernel);
+	}
+	return dst;
+}
+
 - (id)not {
 	IplO *newImage = [[self.class alloc] initWithParameterIplImage:self];
 	cvNot(_iplImage, newImage.iplImage);
@@ -161,36 +181,33 @@
 
 - (CGImageRef)createCGImage {
 	CGColorSpaceRef colorspace = NULL;
-	CGBitmapInfo bitmapInfo = 0;
-	int componentBits = 8;
+	CGBitmapInfo bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
+	int componentBytes = 1;
 	IplImage *iplImage = _iplImage;
 	if (_channels == 1) {
-		if (_depth == IPL_DEPTH_8U) {
-			colorspace = [NSColorSpace genericGrayColorSpace].CGColorSpace;
-			bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
-		} else if (_depth == IPL_DEPTH_16U) {
-			colorspace = [NSColorSpace genericGrayColorSpace].CGColorSpace;
-			bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
-			componentBits = 16;
-		} else if (_depth == IPL_DEPTH_32S) {
-			colorspace = [NSColorSpace genericGrayColorSpace].CGColorSpace;
-			bitmapInfo = (CGBitmapInfo)kCGImageAlphaNone;
-			iplImage = cvCreateImage(cvGetSize(self.iplImage), IPL_DEPTH_8U, 1);
-			float *fptr = (float *)_iplImage->imageData;
-			unsigned char *cptr = (unsigned char *)iplImage->imageData;
-			for (int i = iplImage->imageSize; i != 0; i--, cptr++, fptr++)
-				*cptr = (*fptr < 0) ? 0xff : 0x00;
+		colorspace = [NSColorSpace genericGrayColorSpace].CGColorSpace;
+		if (_depth == IPL_DEPTH_16U || _depth == IPL_DEPTH_16S)
+			componentBytes = sizeof(short);
+		else if (_depth == IPL_DEPTH_32F || _depth == IPL_DEPTH_32S) {
+			bitmapInfo |= kCGBitmapFloatComponents;
+			componentBytes = sizeof(float);
 		}
-	} else if (_channels == 3) {
-		colorspace = [NSColorSpace genericRGBColorSpace].CGColorSpace;
-		bitmapInfo = kCGBitmapByteOrder32Little|kCGImageAlphaPremultipliedFirst;
-		iplImage = cvCreateImage(cvGetSize(self.iplImage), IPL_DEPTH_8U, 4);
-		cvCvtColor(_iplImage, iplImage, CV_BGR2BGRA);
 	} else {
 		colorspace = [NSColorSpace genericRGBColorSpace].CGColorSpace;
 		bitmapInfo = kCGBitmapByteOrder32Little|kCGImageAlphaPremultipliedFirst;
+		if (_depth == IPL_DEPTH_8U || _depth == IPL_DEPTH_8S) {
+			if (_channels == 3) {
+				iplImage = cvCreateImage(cvGetSize(self.iplImage), IPL_DEPTH_8U, 4);
+				cvCvtColor(_iplImage, iplImage, CV_BGR2BGRA);
+			}
+		} else if (_depth == IPL_DEPTH_16U || _depth == IPL_DEPTH_16S)
+			componentBytes = sizeof(short);
+		else if (_depth == IPL_DEPTH_32F || _depth == IPL_DEPTH_32S) {
+			bitmapInfo = kCGBitmapFloatComponents|kCGImageAlphaPremultipliedFirst;
+			componentBytes = sizeof(float);
+		}
 	}
-	CGContextRef context = CGBitmapContextCreate(iplImage->imageData, iplImage->width, iplImage->height, componentBits, iplImage->widthStep, colorspace, bitmapInfo);
+	CGContextRef context = CGBitmapContextCreate(iplImage->imageData, iplImage->width, iplImage->height, componentBytes * 8, iplImage->widthStep, colorspace, bitmapInfo);
 	CGImageRef newCGImage = CGBitmapContextCreateImage(context);
 	CGContextRelease(context);
 	if (iplImage != _iplImage)
@@ -208,6 +225,8 @@
 
 - (NSImage *)NSImage {
 	CGImageRef cgimage = [self createCGImage];
+	if (cgimage == NULL)
+		return nil;
 	NSImage *newImage = [[NSImage alloc] initWithCGImage:cgimage size:NSZeroSize];
 	CGImageRelease(cgimage);
 	return newImage;

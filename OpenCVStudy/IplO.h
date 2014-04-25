@@ -33,6 +33,25 @@
 - (void)drawContours:(OCVSeq *)contours lineWidth:(int)lineWidth extColor:(CvScalar)extColor holeColor:(CvScalar)holeColor depth:(int)depth;
 - (id)pyrSegmentation:(OCVSeq **)seqO;
 - (id)pyrMeanShiftFiltering;
+
+/**
+ * erode アルゴリズム(膨張)で画像を加工する
+ * @param   shape          	CV_SHAPE_CROSS, CV_SHAPE_ELLIPSE, CV_SHAPE_RECT を指定
+ * @param   size          	shape のサイズ
+ * @param   anchor         	アンカー位置 (CV_SHAPE_CROSS の時のみ有効)
+ * @param   iterations      繰り返し回数
+ */
+- (id)erodeWithShape:(int)shape size:(CvSize)size anchor:(CvPoint)anchor iterations:(int)iterations;
+
+/**
+ * dilate アルゴリズム(縮退)で画像を加工する
+ * @param   shape          	CV_SHAPE_CROSS, CV_SHAPE_ELLIPSE, CV_SHAPE_RECT を指定
+ * @param   size          	shape のサイズ
+ * @param   anchor         	アンカー位置 (CV_SHAPE_CROSS の時のみ有効)
+ * @param   iterations      繰り返し回数
+ */
+- (id)dilateWithShape:(int)shape size:(CvSize)size anchor:(CvPoint)anchor iterations:(int)iterations;
+
 - (id)BGRImage;
 - (CGImageRef)CGImage;
 - (NSImage *)NSImage;
